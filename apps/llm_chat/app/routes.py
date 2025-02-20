@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from chat_service import get_chat_response
+from apps.llm_chat.app.chat_service import get_chat_response
 
 router = APIRouter()
 
