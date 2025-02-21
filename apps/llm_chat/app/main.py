@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from apps.llm_chat.app.routes import router
+from llm_chat.app.routes import router
 
 app = FastAPI()
 
