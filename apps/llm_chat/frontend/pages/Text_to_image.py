@@ -1,32 +1,34 @@
 import streamlit as st
+from internal_logic import generate_image_from_text
+from PIL import Image
+import time
+import os
 
+# Sidebar for API key (optional)
 with st.sidebar:
     anthropic_api_key = st.text_input("Maybe API Key", key="file_qa_api_key", type="password")
     "[View the source code](https://github.com/streamlit/llm-examples/blob/main/pages/1_File_Q%26A.py)"
     "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/llm-examples?quickstart=1)"
 
-st.title("📝 Text to image")
-uploaded_file = st.file_uploader("Upload an article", type=("txt", "md"))
-question = st.text_input(
-    "Ask something about the article",
-    placeholder="Can you give me a short summary?",
-    disabled=not uploaded_file,
+st.title("🎨 Text to Image Generator")
+
+prompt = st.text_input(
+    "Enter a prompt to generate an image:",
+    placeholder="A futuristic city with flying cars..."
 )
 
-# if uploaded_file and question and not anthropic_api_key:
-#     st.info("Please add your Anthropic API key to continue.")
+# Button to trigger image generation
+if st.button("Generate Image"):
+    if prompt:
+        with st.spinner("Generating your image... 🚀 Please wait."):
+            # Generate the image and get the saved file path
+            image_path = generate_image_from_text(prompt)
 
-# if uploaded_file and question and anthropic_api_key:
-#     article = uploaded_file.read().decode()
-#     prompt = f"""{anthropic.HUMAN_PROMPT} Here's an article:\n\n<article>
-#     {article}\n\n</article>\n\n{question}{anthropic.AI_PROMPT}"""
-
-#     client = anthropic.Client(api_key=anthropic_api_key)
-#     response = client.completions.create(
-#         prompt=prompt,
-#         stop_sequences=[anthropic.HUMAN_PROMPT],
-#         model="claude-v1",  # "claude-2" for Claude 2 model
-#         max_tokens_to_sample=100,
-#     )
-#     st.write("### Answer")
-#     st.write(response.completion)
+        # Display the image once it's ready
+        if image_path and os.path.exists(image_path):
+            st.image(Image.open(image_path), caption="Generated Image", use_container_width=True)
+            st.success("Image generation complete! 🎉")
+        else:
+            st.error("Something went wrong. Please try again.")
+    else:
+        st.warning("Please enter a prompt before generating an image.")
